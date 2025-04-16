@@ -32,7 +32,7 @@ fun main() {
     WallService.edit(2, "Super news", "The Russian and US national hockey teams will play soon", 1)
     notes[0].showNote()
 
-    get(101)
+    WallService.get(101)
     println(notesOwner.size)
     notesOwner[0].showNote()
 
@@ -91,9 +91,8 @@ object WallService {
     }
 
     fun delete(noteId: Int): Int {
-        notes.firstOrNull {it.nid == noteId} ?: throw
-            NoteNotFoundException("Заметки с ID $noteId не существует")
-        notes.removeAt(notes.indexOfFirst {it.nid == noteId})  // removeIf
+        notes.firstOrNull { it.nid == noteId } ?: throw NoteNotFoundException("Заметки с ID $noteId не существует")
+        notes.removeAt(notes.indexOfFirst { it.nid == noteId })  // removeIf
 
         comments.forEach {
             if (it.nid == noteId) it.commentIsExist = false
@@ -102,15 +101,15 @@ object WallService {
     }
 
     fun deleteComment(commentId: Int): Boolean {
-        val commentToDel = comments.firstOrNull { it.cid == commentId } ?: throw
-            CommentNotFoundException("Комментария с ID $commentId не существует")
+        val commentToDel = comments.firstOrNull { it.cid == commentId }
+            ?: throw CommentNotFoundException("Комментария с ID $commentId не существует")
         commentToDel.commentIsExist = false
         return true
     }
 
     fun edit(noteId: Int, titleNew: String, textNew: String, privacyNew: Int): Boolean {
-        val noteEdit = notes.firstOrNull { it.nid == noteId } ?: throw
-            NoteNotFoundException("Заметки с ID $noteId не существует")
+        val noteEdit =
+            notes.firstOrNull { it.nid == noteId } ?: throw NoteNotFoundException("Заметки с ID $noteId не существует")
         noteEdit.title = titleNew
         noteEdit.text = textNew
         noteEdit.privacy = privacyNew
@@ -119,21 +118,33 @@ object WallService {
     }
 
     fun editComment(commentId: Int, messageNew: String): Boolean {
-        val commentEdit = comments.firstOrNull { it.cid == commentId } ?: throw
-            CommentNotFoundException("Комментария с ID $commentId не существует")
+        val commentEdit = comments.firstOrNull { it.cid == commentId }
+            ?: throw CommentNotFoundException("Комментария с ID $commentId не существует")
         commentEdit.message = messageNew
         commentEdit.dateComment = Date()
 
         return true
     }
-}
+
     fun get(noteOid: Int): Boolean {
-        notesOwner = notes.filter {it.oid == noteOid}.toMutableList()
+        notesOwner = notes.filter { it.oid == noteOid }.toMutableList()
         if (notesOwner.isEmpty()) {
             throw NoteOwnerNotFoundException("Заметок этого автора не найдено")
         }
         return true
     }
+
+    fun resetCounters (){
+        counterNote = 0
+        counterComment = 0
+    }
+    fun resetNotes (){
+        notes.clear()
+    }
+    fun resetComments (){
+        comments.clear()
+    }
+}
 
 /*
     fun getById(noteId: Int, userId: , offset: , count: ):  {
